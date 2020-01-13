@@ -18,6 +18,7 @@ func Init() *echo.Echo{
 	// Routes
 	e.GET("/healthcheck", api.GetHealthCheck)
 	e.POST("/report", api.PostGenerateReport)
+	e.POST("/report-consolidated", api.PostGenerateReportConsolidated)
 
 	return e
 }

@@ -1,7 +1,6 @@
 package machinery
 
 import (
-	"encoding/json"
 	"fmt"
 
 	githubApi "github.com/evandroferreiras/machinery-meetup/machinery/github_api"
@@ -15,13 +14,12 @@ type GitHubResponse struct {
 
 
 // GetTopGitHubRepoByLanguage ...
-func GetTopGitHubRepoByLanguage(language string) (string, error) {
-	repositories, err := githubApi.GetTopRepoByLanguage(language, 10)
+func GetTopGitHubRepoByLanguage(language string, page int) ([]string, error) {
+	repositories, err := githubApi.GetTopRepoByLanguage(language, page)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
-	marshalled, err := json.Marshal(GitHubResponse{language, repositories})
-	return string(marshalled), err
+	return repositories, err
 }
 
 // PrintAllResults ...

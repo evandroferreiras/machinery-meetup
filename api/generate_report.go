@@ -19,3 +19,13 @@ func PostGenerateReport(c echo.Context) (err error) {
 	machinery.GetServer().SendGitHubTask(b.Language)
 	return nil
 }
+
+func PostGenerateReportConsolidated(c echo.Context) (err error) {
+	type body struct {
+		Language string `json:"language"`
+	}
+	b := new(body)
+	c.Bind(&b)
+	machinery.GetServer().SendGitHubTaskForTenPages(b.Language)
+	return nil
+}

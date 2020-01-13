@@ -8,7 +8,7 @@ import (
 	"net/url"
 )
 
-var gitHubURL = "https://api.github.com/search/repositories?q=language:%s&sort=stars&order=desc"
+var gitHubURL = "https://api.github.com/search/repositories?q=language:%s&sort=stars&order=desc&page=%d"
 
 type repoItems struct {
 	FullName        string `json:"full_name,omitempty"`
@@ -24,10 +24,10 @@ type repo struct {
 }
 
 // GetTopRepoByLanguage ...
-func GetTopRepoByLanguage(language string, top int) ([]string, error) {
-	url := fmt.Sprintf(gitHubURL, url.QueryEscape(language))
-	fmt.Println(url)
-	response, err := http.Get(url)
+func GetTopRepoByLanguage(language string, page int) ([]string, error) {
+	uri := fmt.Sprintf(gitHubURL, url.QueryEscape(language), page)
+	fmt.Println(uri)
+	response, err := http.Get(uri)
 	if err != nil {
 		return nil, err
 	}
@@ -39,7 +39,7 @@ func GetTopRepoByLanguage(language string, top int) ([]string, error) {
 
 	result := make([]string, 0)
 	if len(dat.Items) > 0 {
-		for _, value := range dat.Items[:top] {
+		for _, value := range dat.Items {
 			result = append(result, value.Name)
 		}
 	}

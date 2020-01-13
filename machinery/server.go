@@ -44,13 +44,13 @@ func startServer() (*machinery.Server, error) {
 		return nil, err
 	}
 
-	//Register tasks
-	tasks := map[string]interface{}{
+	//Register signatures
+	signatures := map[string]interface{}{
 		"getTopGitHubRepoByLanguage": GetTopGitHubRepoByLanguage,
 		"printAllResults":            PrintAllResults,
 	}
 
-	err = server.RegisterTasks(tasks)
+	err = server.RegisterTasks(signatures)
 	if err != nil {
 		return nil, err
 	}
@@ -72,7 +72,39 @@ func (s *server) SendGitHubTask(language string) {
 				Type:  "string",
 				Value: fmt.Sprintf("%v", language),
 			},
+			{
+				Type: "int",
+				Value: 1,
+			},
 		},
 	}
-	s.server.SendTask(&signature)
+	_, _ = s.server.SendTask(&signature)
+}
+
+func (s *server) SendGitHubTaskForTenPages(language string) {
+
+	var signatures = make([]*tasks.Signature, 0)
+	for i := 1; i <= 10; i++ {
+		var ta = tasks.Signature{
+			Name: "getTopGitHubRepoByLanguage",
+			Args: []tasks.Arg{
+				{
+					Type:  "string",
+					Value: fmt.Sprintf("%v", language),
+				},
+				{
+					Type:  "int",
+					Value: i,
+				},
+			},
+		}
+		signatures = append(signatures, &ta)
+	}
+	group, _ := tasks.NewGroup(signatures ...)
+	_, err := s.server.SendGroup(group, 0) //The second parameter specifies the number of concurrent sending tasks. 0 means unlimited.
+	if err != nil {
+		// failed to send the group
+		// do something with the error
+	}
+
 }
