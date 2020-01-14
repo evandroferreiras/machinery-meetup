@@ -1,8 +1,6 @@
 package machinery
 
 import (
-	"fmt"
-
 	githubApi "github.com/evandroferreiras/machinery-meetup/machinery/github_api"
 )
 
@@ -23,12 +21,10 @@ func GetRepositoriesByLanguageAndPage(language string, page int) ([]string, erro
 }
 
 // SaveConsolidatedResults ...
-func SaveConsolidatedResults(args ... string) error {
-	fmt.Println("-RELATORIO--------------------------")
-	
+func SaveConsolidatedResults(args ... []string) ([]string, error) {
+	consolidatedResults := make([]string, 0)
 	for _, r := range args {
-		fmt.Println(r)
+		consolidatedResults = append(consolidatedResults, r...)
 	}
-	fmt.Println("-----------------------------------")
-	return nil
+	return consolidatedResults, nil
 }

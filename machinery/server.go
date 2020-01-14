@@ -2,11 +2,10 @@ package machinery
 
 import (
 	"fmt"
-	"sync"
-
-	machinery "github.com/RichardKnop/machinery/v1"
+	"github.com/RichardKnop/machinery/v1"
 	"github.com/RichardKnop/machinery/v1/config"
 	"github.com/RichardKnop/machinery/v1/tasks"
+	"sync"
 )
 
 var CONFIG_PATH = "machinery/config.yml"
@@ -45,22 +44,21 @@ func startServer() (*machinery.Server, error) {
 		return nil, err
 	}
 
-	//Register signatures
-	signatures := map[string]interface{}{
+	//Register signaturesToRegister
+	signaturesToRegister := map[string]interface{}{
 		"getRepositoriesByLanguageAndPage": GetRepositoriesByLanguageAndPage,
-		"saveConsolidatedResults":  SaveConsolidatedResults,
+		"saveConsolidatedResults":          SaveConsolidatedResults,
 	}
 
-	err = server.RegisterTasks(signatures)
+	err = server.RegisterTasks(signaturesToRegister)
 	if err != nil {
 		return nil, err
 	}
 
-	
 	return server, nil
 }
 
-func (s *server) StartWorkers(errorsChan chan error){
+func (s *server) StartWorkers(errorsChan chan error) {
 	worker := s.server.NewWorker(CONSUMER_TAG, 10)
 	worker.LaunchAsync(errorsChan)
 }
@@ -74,7 +72,7 @@ func (s *server) GenerateReport(language string) {
 				Value: fmt.Sprintf("%v", language),
 			},
 			{
-				Type: "int",
+				Type:  "int",
 				Value: 1,
 			},
 		},
@@ -83,8 +81,7 @@ func (s *server) GenerateReport(language string) {
 }
 
 func (s *server) GenerateConsolidatedReport(language string) {
-
-	var signatures = make([]*tasks.Signature, 0)
+	var githubTasksSignatures = make([]*tasks.Signature, 0)
 	for i := 1; i <= 10; i++ {
 		var ta = tasks.Signature{
 			Name: "getRepositoriesByLanguageAndPage",
@@ -99,12 +96,21 @@ func (s *server) GenerateConsolidatedReport(language string) {
 				},
 			},
 		}
-		signatures = append(signatures, &ta)
+		githubTasksSignatures = append(githubTasksSignatures, &ta)
 	}
-	group, _ := tasks.NewGroup(signatures ...)
+
+	group, _ := tasks.NewGroup(githubTasksSignatures...)
 	_, err := s.server.SendGroup(group, UNLIMITED_CONCURRENCY_TASKS)
 	if err != nil {
-
+		fmt.Println("Could not send group: %s", err.Error())
 	}
 
+	var saveConsolidatedResultsSignature = tasks.Signature{
+		Name: "saveConsolidatedResults",
+	}
+	chord, _ := tasks.NewChord(group, &saveConsolidatedResultsSignature)
+	_, err = s.server.SendChord(chord, UNLIMITED_CONCURRENCY_TASKS)
+	if err != nil {
+		fmt.Println("Could not send chord: %s", err.Error())
+	}
 }
