@@ -9,8 +9,9 @@ import (
 	"github.com/RichardKnop/machinery/v1/tasks"
 )
 
-var configPath = "machinery/config.yml"
-var consumerTag = "worker"
+var CONFIG_PATH = "machinery/config.yml"
+var CONSUMER_TAG = "worker"
+var UNLIMITED_CONCURRENCY_TASKS = 0
 
 type server struct {
 	server *machinery.Server
@@ -29,7 +30,7 @@ func GetServer() *server {
 }
 
 func loadConfig() (*config.Config, error) {
-	return config.NewFromYaml(configPath, true)
+	return config.NewFromYaml(CONFIG_PATH, true)
 }
 
 func startServer() (*machinery.Server, error) {
@@ -60,7 +61,7 @@ func startServer() (*machinery.Server, error) {
 }
 
 func (s *server) StartWorkers(errorsChan chan error){
-	worker := s.server.NewWorker(consumerTag, 10)
+	worker := s.server.NewWorker(CONSUMER_TAG, 10)
 	worker.LaunchAsync(errorsChan)
 }
 
@@ -101,10 +102,9 @@ func (s *server) GenerateConsolidatedReport(language string) {
 		signatures = append(signatures, &ta)
 	}
 	group, _ := tasks.NewGroup(signatures ...)
-	_, err := s.server.SendGroup(group, 0) //The second parameter specifies the number of concurrent sending tasks. 0 means unlimited.
+	_, err := s.server.SendGroup(group, UNLIMITED_CONCURRENCY_TASKS)
 	if err != nil {
-		// failed to send the group
-		// do something with the error
+
 	}
 
 }
