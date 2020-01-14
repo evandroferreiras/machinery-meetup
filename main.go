@@ -18,12 +18,11 @@ func main() {
 
 	errorsChan := make(chan error)
 	var server = machinery.GetServer()
-
 	server.StartWorkers(errorsChan)
-
 
 	router := route.Init()
 	router.Logger.Fatal(router.Start(":1323"))
+
 	if err := <- errorsChan; err != nil {
 		panic(err)
 	} 	

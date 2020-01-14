@@ -46,8 +46,8 @@ func startServer() (*machinery.Server, error) {
 
 	//Register signatures
 	signatures := map[string]interface{}{
-		"getTopGitHubRepoByLanguage": GetTopGitHubRepoByLanguage,
-		"printAllResults":            PrintAllResults,
+		"getRepositoriesByLanguageAndPage": GetRepositoriesByLanguageAndPage,
+		"saveConsolidatedResults":  SaveConsolidatedResults,
 	}
 
 	err = server.RegisterTasks(signatures)
@@ -64,9 +64,9 @@ func (s *server) StartWorkers(errorsChan chan error){
 	worker.LaunchAsync(errorsChan)
 }
 
-func (s *server) SendGitHubTask(language string) {
+func (s *server) GenerateReport(language string) {
 	var signature = tasks.Signature{
-		Name: "getTopGitHubRepoByLanguage",
+		Name: "getRepositoriesByLanguageAndPage",
 		Args: []tasks.Arg{
 			{
 				Type:  "string",
@@ -81,12 +81,12 @@ func (s *server) SendGitHubTask(language string) {
 	_, _ = s.server.SendTask(&signature)
 }
 
-func (s *server) SendGitHubTaskForTenPages(language string) {
+func (s *server) GenerateConsolidatedReport(language string) {
 
 	var signatures = make([]*tasks.Signature, 0)
 	for i := 1; i <= 10; i++ {
 		var ta = tasks.Signature{
-			Name: "getTopGitHubRepoByLanguage",
+			Name: "getRepositoriesByLanguageAndPage",
 			Args: []tasks.Arg{
 				{
 					Type:  "string",

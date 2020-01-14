@@ -23,8 +23,8 @@ type repo struct {
 	Items []repoItems
 }
 
-// GetTopRepoByLanguage ...
-func GetTopRepoByLanguage(language string, page int) ([]string, error) {
+// GetRepositoriesByLanguageAndPage ...
+func GetRepositoriesByLanguageAndPage(language string, page int) ([]string, error) {
 	uri := fmt.Sprintf(gitHubURL, url.QueryEscape(language), page)
 	fmt.Println(uri)
 	response, err := http.Get(uri)

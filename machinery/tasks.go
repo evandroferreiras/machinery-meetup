@@ -13,17 +13,17 @@ type GitHubResponse struct {
 }
 
 
-// GetTopGitHubRepoByLanguage ...
-func GetTopGitHubRepoByLanguage(language string, page int) ([]string, error) {
-	repositories, err := githubApi.GetTopRepoByLanguage(language, page)
+// GetRepositoriesByLanguageAndPage ...
+func GetRepositoriesByLanguageAndPage(language string, page int) ([]string, error) {
+	repositories, err := githubApi.GetRepositoriesByLanguageAndPage(language, page)
 	if err != nil {
 		return nil, err
 	}
 	return repositories, err
 }
 
-// PrintAllResults ...
-func PrintAllResults(args ... string) error {
+// SaveConsolidatedResults ...
+func SaveConsolidatedResults(args ... string) error {
 	fmt.Println("-RELATORIO--------------------------")
 	
 	for _, r := range args {

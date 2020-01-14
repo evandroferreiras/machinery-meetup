@@ -16,7 +16,7 @@ func PostGenerateReport(c echo.Context) (err error) {
 	}
 	b := new(body)
 	c.Bind(&b)
-	machinery.GetServer().SendGitHubTask(b.Language)
+	machinery.GetServer().GenerateReport(b.Language)
 	return nil
 }
 
@@ -26,6 +26,6 @@ func PostGenerateReportConsolidated(c echo.Context) (err error) {
 	}
 	b := new(body)
 	c.Bind(&b)
-	machinery.GetServer().SendGitHubTaskForTenPages(b.Language)
+	machinery.GetServer().GenerateConsolidatedReport(b.Language)
 	return nil
 }
