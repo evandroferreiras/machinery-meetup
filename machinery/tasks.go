@@ -1,6 +1,7 @@
 package machinery
 
 import (
+	"fmt"
 	githubApi "github.com/evandroferreiras/machinery-meetup/machinery/github_api"
 )
 
@@ -26,5 +27,6 @@ func SaveConsolidatedResults(args ... []string) ([]string, error) {
 	for _, r := range args {
 		consolidatedResults = append(consolidatedResults, r...)
 	}
+	fmt.Println("QTD:", len(consolidatedResults))
 	return consolidatedResults, nil
 }
