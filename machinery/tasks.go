@@ -22,11 +22,12 @@ func GetRepositoriesByLanguageAndPage(language string, page int) ([]string, erro
 }
 
 // SaveConsolidatedResults ...
-func SaveConsolidatedResults(args ... []string) ([]string, error) {
+func SaveConsolidatedResults(args ... []string) (error) {
 	consolidatedResults := make([]string, 0)
 	for _, r := range args {
 		consolidatedResults = append(consolidatedResults, r...)
 	}
 	fmt.Println("QTD:", len(consolidatedResults))
-	return consolidatedResults, nil
+	fmt.Println(consolidatedResults)
+	return nil
 }

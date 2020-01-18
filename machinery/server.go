@@ -5,13 +5,14 @@ import (
 	"github.com/RichardKnop/machinery/v1"
 	"github.com/RichardKnop/machinery/v1/config"
 	"github.com/RichardKnop/machinery/v1/tasks"
+	"github.com/RichardKnop/machinery/v1/log"
 	"sync"
-	"time"
+
 )
 
-var CONFIG_PATH = "machinery/config.yml"
-var CONSUMER_TAG = "worker"
-var UNLIMITED_CONCURRENCY_TASKS = 10
+const CONFIG_PATH = "machinery/config.yml"
+const CONSUMER_TAG = "worker"
+const UNLIMITED_CONCURRENCY_TASKS = 10
 
 type server struct {
 	server *machinery.Server
@@ -107,18 +108,8 @@ func (s *server) GenerateConsolidatedReport(language string) {
 	}
 	
 	chord, _ := tasks.NewChord(group, &saveConsolidatedResultsSignature)
-	chordAsyncResult, err := s.server.SendChord(chord, UNLIMITED_CONCURRENCY_TASKS)
+	_, err := s.server.SendChord(chord, UNLIMITED_CONCURRENCY_TASKS)
 	if err != nil {
-		fmt.Println("Could not send chord: %s", err.Error())
+		fmt.Println("Could not send chord:", err.Error())
 	}
-
-	results, err := chordAsyncResult.Get(time.Duration(time.Millisecond * 5))
-	if err != nil {
-		// getting result of a chord failed
-		// do something with the error
-	}
-	for _, result := range results {
-		fmt.Println(result.Interface())
-	}
-
 }

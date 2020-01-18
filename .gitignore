@@ -1,6 +1,7 @@
 # Binaries for programs and plugins
 machinery-meetup
 .vscode
+.idea
 *.exe
 *.exe~
 *.dll
